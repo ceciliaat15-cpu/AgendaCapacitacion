@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Capacitación ALPACEL | Agenda + Reporte</title>
+  <meta name="description" content="Agenda semanal editable + reporte de indicadores con semaforización + checklist de capacitación ALPACEL." />
+  <style>
+    :root{
+      --bg0:#1b0c05;
+      --bg1:#2a1207;
+      --card:#2f1609cc;
+      --card2:#351a0bcc;
+      --stroke:#ffffff1f;
+      --text:#fff7ef;
+      --muted:#ffd9bfcc;
+      --accent:#ff7a18;
+      --accent2:#ffb24a;
+      --good:#2dd4bf;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, #ff8a2a22 0%, transparent 60%),
+        radial-gradient(1000px 700px at 85% 20%, #ffcf6a1e 0%, transparent 55%),
+        radial-gradient(900px 600px at 40% 95%, #ff4d1a14 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, #1b0c05ee, #1b0c0599);
+      border-bottom:1px solid var(--stroke);
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 22px rgba(255,122,24,.25);
+      display:grid;place-items:center;
+      border:1px solid #ffffff2a;
+      font-weight:900;
+      color:#2a1207;
+      user-select:none;
+    }
+    .title h1{margin:0;font-size:18px;letter-spacing:.2px}
+    .title p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button{
+      appearance:none;border:1px solid #ffffff26;
+      background: linear-gradient(180deg, #3a1c0ddd, #2a1207dd);
+      color:var(--text);
+      padding:10px 12px;border-radius:14px;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      transition: transform .08s ease, border-color .2s ease, filter .2s ease;
+      font-weight:700;
+      font-size:13px;
+    }
+    button:hover{transform: translateY(-1px); border-color:#ffffff3a; filter:saturate(1.1)}
+    button:active{transform: translateY(0px) scale(.99)}
+    .btnAccent{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#2a1207;
+      border-color:#ffffff3a;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .85fr;
+      gap:14px;
+      padding:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--stroke);
+      display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.2px;
+    }
+    .cardHeader .sub{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .cardBody{padding:14px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid #ffffff22;
+      color:var(--muted);
+      font-size:12px;
+      background: #00000024;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .field{
+      display:flex;flex-direction:column;gap:6px;
+      min-width: 180px;
+      flex: 1;
+    }
+    label{font-size:12px;color:var(--muted)}
+    input, textarea, select{
+      width:100%;
+      background:#00000022;
+      border:1px solid #ffffff22;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 10px;
+      outline:none;
+      font-size:13px;
+    }
+    textarea{min-height:84px;resize:vertical}
+    input:focus, textarea:focus, select:focus{border-color:#ffffff44}
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid #ffffff22;
+      border-radius:16px;
+      background:#00000016;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid #ffffff18;
+      border-right:1px solid #ffffff12;
+      vertical-align:top;
+      font-size:13px;
+    }
+    th{color:#ffe7d6; font-size:12px; text-transform:uppercase; letter-spacing:.6px; background:#00000022}
+    tr:last-child td{border-bottom:none}
+    td:last-child, th:last-child{border-right:none}
+    .cellInput{
+      width:100%;
+      background:transparent;
+      border:none;
+      padding:0;
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .cellInput::placeholder{color:#ffffff55}
+    .mini{
+      font-size:12px;color:var(--muted);
+    }
+    .sema{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid #ffffff22;
+      background:#00000022;
+      font-weight:800;
+      font-size:12px;
+    }
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .muted{color:var(--muted)}
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 680px){
+      .split{grid-template-columns:1fr}
+    }
+    .checklist{
+      display:grid;
+      gap:10px;
+    }
+    .checkItem{
+      display:flex;align-items:flex-start;gap:10px;
+      padding:10px 12px;
+      border:1px solid #ffffff1f;
+      border-radius:16px;
+      background:#00000018;
+    }
+    .checkItem input{width:18px;height:18px;margin-top:2px}
+    .checkItem .txt b{display:block}
+    .footerSig{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px dashed #ffffff2a;
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12.5px;
+    }
+    .printOnly{display:none}
+    @media print{
+      header, .noPrint{display:none !important}
+      body{background:#fff;color:#111}
+      .card{box-shadow:none;border:1px solid #ddd;background:#fff}
+      .cardHeader{border-bottom:1px solid #ddd}
+      th{background:#f3f3f3;color:#111}
+      input, textarea, select{border:1px solid #ddd;color:#111;background:#fff}
+      .cellInput{color:#111}
+      .sema{border:1px solid #ddd;background:#fff;color:#111}
+      .printOnly{display:block}
+      .wrap{max-width:none}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div class="title">
+        <h1>Capacitación ALPACEL — Agenda + Reporte</h1>
+        <p>Calorcito operativo: agenda semanal, reporte editable con semáforo y checklist. Guardado automático.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btnAccent" id="btnPrint">Imprimir / Guardar PDF</button>
+      <button id="btnExport">Exportar respaldo</button>
+      <button id="btnImport">Importar respaldo</button>
+      <button id="btnReset">Reset (solo si de verdad)</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" />
+    </div>
+  </div>
+</header>
+
+<div class="wrap printOnly">
+  <h2 style="margin:12px 0 0;">Reporte de Capacitación — Capacitación ALPACEL</h2>
+  <p style="margin:6px 0 0;color:#444;">(Versión impresa del registro)</p>
+</div>
+
+<main class="grid">
+
+  <section class="card">
+    <div class="cardHeader">
+      <div>
+        <h2>1) Calendario semanal (editable)</h2>
+        <div class="sub">Tu semana, tu ley. Escribe y se guarda solo.</div>
+      </div>
+      <div class="row noPrint" style="align-items:center;">
+        <span class="pill">🗓️ Semana del: <input data-k="weekOf" type="text" placeholder="Ej. 29/Dic/2025" style="width:150px; padding:6px 8px;border-radius:12px"/></span>
+      </div>
+    </div>
+    <div class="cardBody">
+      <div class="mini">Tip: pon actividades cortas y accionables. Lo que no se agenda… se vuelve “luego lo hago” (y ya sabemos cómo termina).</div>
+      <div style="margin-top:12px; overflow:auto;">
+        <table id="weekTable">
+          <thead>
+            <tr>
+              <th style="min-width:140px;">Bloque</th>
+              <th style="min-width:180px;">Lunes</th>
+              <th style="min-width:180px;">Martes</th>
+              <th style="min-width:180px;">Miércoles</th>
+              <th style="min-width:180px;">Jueves</th>
+              <th style="min-width:180px;">Viernes</th>
+              <th style="min-width:180px;">Sábado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="noPrint" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <button id="addWeekRow">+ Agregar bloque</button>
+        <button id="resetWeek">Limpiar semana</button>
+        <span class="pill">Auto-guardado ✅</span>
+      </div>
+    </div>
+  </section>
+
+  <aside class="card">
+    <div class="cardHeader">
+      <div>
+        <h2>3) Checklist de lo realizado en farmacia</h2>
+        <div class="sub">Sin drama: hecho o no hecho.</div>
+      </div>
+      <span class="pill">✅ Evidencia: notas abajo</span>
+    </div>
+    <div class="cardBody">
+      <div class="checklist" id="checklist"></div>
+      <div style="margin-top:12px">
+        <label>Notas / Evidencia rápida</label>
+        <textarea data-k="checkNotes" placeholder="Ej. Se revisó boletín, se reforzó PCP con guion de cierre, se dejó plan de trabajo semanal..."></textarea>
+      </div>
+    </div>
+  </aside>
+
+  <section class="card" style="grid-column: 1 / -1;">
+    <div class="cardHeader">
+      <div>
+        <h2>2) Reporte editable de indicadores (para entregar)</h2>
+        <div class="sub">Encabezado, metas por colaborador y seguimiento de farmacia con indicadores.</div>
+      </div>
+      <div class="row noPrint" style="align-items:center;">
+        <span class="pill">🟢 ≥100%</span>
+        <span class="pill">🟡 90–99%</span>
+        <span class="pill">🔴 &lt;90%</span>
+        <span class="pill">Semáforo automático</span>
+      </div>
+    </div>
+
+    <div class="cardBody">
+      <div class="split">
+        <div class="card" style="box-shadow:none;border-radius:16px;">
+          <div class="cardBody">
+            <div class="row">
+              <div class="field">
+                <label>Farmacia</label>
+                <input data-k="farmacia" type="text" placeholder="Ej. Saltillo ___" />
+              </div>
+              <div class="field">
+                <label>Fecha</label>
+                <input data-k="fecha" type="text" placeholder="DD/MM/AAAA" />
+              </div>
+              <div class="field">
+                <label>Encargado(a)</label>
+                <input data-k="encargado" type="text" placeholder="Nombre" />
+              </div>
+              <div class="field">
+                <label>Hora de interacción</label>
+                <input data-k="hora" type="text" placeholder="Ej. 10:30" />
+              </div>
+            </div>
+            <div class="mini" style="margin-top:8px">
+              Encabezado del reporte.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="box-shadow:none;border-radius:16px;">
+          <div class="cardBody">
+            <label>Objetivo / contexto breve</label>
+            <textarea data-k="objetivo" placeholder="Ej. Reforzar políticas operativas y empujar PCP; revisar boletín y ejecutar estrategia de venta del día."></textarea>
+            <div class="footerSig">
+              <div><b>Lic. Cecilia Avila</b><br/>Capacitación ALPACEL</div>
+              <div class="muted">“Lo que no se mide, se inventa.” (y luego duele)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="card">
+        <div class="cardHeader">
+          <div>
+            <h2 style="font-size:14px">METAS DE FARMACIA — Colaboradores (APP / PCP / PXN / %BATEO)</h2>
+            <div class="sub">Tabla editable.</div>
+          </div>
+          <div class="noPrint" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button id="addMetaRow">+ Agregar colaborador</button>
+            <button id="resetMeta">Limpiar tabla</button>
+          </div>
+        </div>
+        <div class="cardBody" style="overflow:auto;">
+          <table id="metaTable">
+            <thead>
+              <tr>
+                <th style="min-width:120px">Fecha</th>
+                <th style="min-width:70px">No.</th>
+                <th style="min-width:220px">Nombre</th>
+                <th style="min-width:110px">APP</th>
+                <th style="min-width:110px">PCP</th>
+                <th style="min-width:110px">PXN</th>
+                <th style="min-width:110px">% BATEO</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="card">
+        <div class="cardHeader">
+          <div>
+            <h2 style="font-size:14px">Seguimiento de farmacia — Indicadores (Meta / Proyección / Alcance + Semáforo)</h2>
+            <div class="sub">Venta total, Presupuesto, PCP, CEPIP, Impulso.</div>
+          </div>
+          <div class="noPrint" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button id="recalcSema">Recalcular semáforo</button>
+            <button id="resetKpis">Reiniciar indicadores</button>
+          </div>
+        </div>
+        <div class="cardBody" style="overflow:auto;">
+          <table id="kpiTable">
+            <thead>
+              <tr>
+                <th style="min-width:200px">Indicador</th>
+                <th style="min-width:130px">Meta</th>
+                <th style="min-width:130px">Proyección</th>
+                <th style="min-width:130px">Alcance</th>
+                <th style="min-width:170px">Semáforo</th>
+                <th style="min-width:170px">Lectura</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="mini" style="margin-top:10px">
+            Puedes escribir números o porcentajes (ej. 81% o 0.81 o 81). El sistema intenta entenderte… como buen capacitador con paciencia.
+          </div>
+        </div>
+      </div>
+
+      <div class="split" style="margin-top:14px">
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2 style="font-size:14px">Compromisos del colaborador</h2>
+              <div class="sub">Lista simple para compromisos claros.</div>
+            </div>
+            <div class="noPrint" style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button id="addCommit">+ Agregar compromiso</button>
+              <button id="resetCommit">Limpiar</button>
+            </div>
+          </div>
+          <div class="cardBody" style="overflow:auto;">
+            <table id="commitTable">
+              <thead>
+                <tr>
+                  <th style="min-width:90px">Número</th>
+                  <th>Compromiso de colaborador</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2 style="font-size:14px">Observaciones del capacitador</h2>
+              <div class="sub">Directo, útil e institucional.</div>
+            </div>
+          </div>
+          <div class="cardBody">
+            <textarea data-k="observaciones" style="min-height:210px" placeholder="Ej. Se detecta fuga en cierre de PCP. Reforzar guion. Se deja plan de trabajo..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="cardHeader">
+          <div>
+            <h2 style="font-size:14px">Firmas</h2>
+            <div class="sub">Cierre formal.</div>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="row">
+            <div class="field">
+              <label>Capacitador</label>
+              <input data-k="firmaCap" type="text" value="Lic. Cecilia Avila" />
+            </div>
+            <div class="field">
+              <label>Área</label>
+              <input data-k="firmaArea" type="text" value="Capacitación ALPACEL" />
+            </div>
+            <div class="field">
+              <label>Encargado(a) de farmacia</label>
+              <input data-k="firmaEnc" type="text" placeholder="Nombre y firma" />
+            </div>
+          </div>
+          <div class="mini" style="margin-top:10px">
+            En impresión/PDF salen como texto. Para firma manuscrita: imprime y firma.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+const STORE_KEY = "alpacel_capacitacion_agenda_reporte_v1";
+
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); }
+  catch(e){ return {}; }
+}
+function saveStore(obj){
+  localStorage.setItem(STORE_KEY, JSON.stringify(obj));
+}
+let store = loadStore();
+
+function setByPath(obj, path, val){
+  const parts = path.split(".");
+  let cur = obj;
+  for(let i=0;i<parts.length-1;i++){
+    cur[parts[i]] = cur[parts[i]] ?? {};
+    cur = cur[parts[i]];
+  }
+  cur[parts[parts.length-1]] = val;
+}
+function getByPath(obj, path, fallback=""){
+  const parts = path.split(".");
+  let cur = obj;
+  for(const p of parts){
+    if(cur && Object.prototype.hasOwnProperty.call(cur,p)) cur = cur[p];
+    else return fallback;
+  }
+  return (cur ?? fallback);
+}
+
+function bindFields(){
+  document.querySelectorAll("[data-k]").forEach(el=>{
+    const k = el.getAttribute("data-k");
+    const val = getByPath(store, "fields."+k, "");
+    if(el.type === "checkbox"){
+      el.checked = !!val;
+    }else{
+      el.value = val;
+    }
+    el.addEventListener("input", ()=>{
+      setByPath(store, "fields."+k, el.type==="checkbox" ? el.checked : el.value);
+      saveStore(store);
+    });
+  });
+}
+
+function makeCellInput(value, placeholder=""){
+  const inp = document.createElement("input");
+  inp.className = "cellInput";
+  inp.value = value ?? "";
+  inp.placeholder = placeholder;
+  return inp;
+}
+
+function parseNum(x){
+  if(x === null || x === undefined) return NaN;
+  const s = String(x).trim().replace(",", ".");
+  if(!s) return NaN;
+  const pct = s.endsWith("%");
+  const n = Number(s.replace("%",""));
+  if(Number.isNaN(n)) return NaN;
+  if(pct) return n;
+  return n;
+}
+
+function ratioFrom(metaRaw, alcRaw){
+  const meta = parseNum(metaRaw);
+  const alc = parseNum(alcRaw);
+  if(Number.isNaN(meta) || meta === 0 || Number.isNaN(alc)) return NaN;
+  const m = (meta > 0 && meta <= 1) ? meta*100 : meta;
+  const a = (alc > 0 && alc <= 1) ? alc*100 : alc;
+  return a / m;
+}
+
+function semaFromRatio(r){
+  if(Number.isNaN(r)) return {cls:"warn", label:"Sin dato", note:"Completa Meta y Alcance"};
+  if(r >= 1) return {cls:"good", label:"Verde", note:"Alcance ≥ Meta"};
+  if(r >= 0.90) return {cls:"warn", label:"Amarillo", note:"Cerca: 90–99%"};
+  return {cls:"bad", label:"Rojo", note:"Debajo de 90%"};
+}
+
+/* Semana */
+const weekTable = document.querySelector("#weekTable tbody");
+function defaultWeekRows(){
+  return [
+    {block:"Apertura", days:["","","","","",""]},
+    {block:"Punta de venta", days:["","","","","",""]},
+    {block:"Capacitación", days:["","","","","",""]},
+    {block:"Seguimiento indicadores", days:["","","","","",""]},
+    {block:"Cierre / evidencias", days:["","","","","",""]},
+  ];
+}
+function renderWeek(){
+  const rows = getByPath(store,"tables.week", null) ?? defaultWeekRows();
+  setByPath(store,"tables.week", rows);
+  saveStore(store);
+
+  weekTable.innerHTML = "";
+  rows.forEach((r, idx)=>{
+    const tr = document.createElement("tr");
+
+    const td0 = document.createElement("td");
+    const b = makeCellInput(r.block, "Bloque");
+    b.addEventListener("input", ()=>{
+      store.tables.week[idx].block = b.value;
+      saveStore(store);
+    });
+    td0.appendChild(b);
+    tr.appendChild(td0);
+
+    for(let d=0; d<6; d++){
+      const td = document.createElement("td");
+      const inp = document.createElement("textarea");
+      inp.className = "cellInput";
+      inp.style.minHeight = "70px";
+      inp.value = (r.days?.[d] ?? "");
+      inp.placeholder = "Actividad / nota...";
+      inp.addEventListener("input", ()=>{
+        store.tables.week[idx].days[d] = inp.value;
+        saveStore(store);
+      });
+      td.appendChild(inp);
+      tr.appendChild(td);
+    }
+    weekTable.appendChild(tr);
+  });
+}
+document.getElementById("addWeekRow").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.week = store.tables.week || defaultWeekRows();
+  store.tables.week.push({block:"Nuevo bloque", days:["","","","","",""]});
+  saveStore(store);
+  renderWeek();
+});
+document.getElementById("resetWeek").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.week = defaultWeekRows();
+  saveStore(store);
+  renderWeek();
+});
+
+/* Metas colaboradores */
+const metaBody = document.querySelector("#metaTable tbody");
+function defaultMetaRows(){
+  return [
+    {fecha:"", no:"", nombre:"", app:"", pcp:"", pxn:"", bateo:""},
+    {fecha:"", no:"", nombre:"", app:"", pcp:"", pxn:"", bateo:""},
+    {fecha:"", no:"", nombre:"", app:"", pcp:"", pxn:"", bateo:""},
+  ];
+}
+function renderMeta(){
+  const rows = getByPath(store,"tables.meta", null) ?? defaultMetaRows();
+  setByPath(store,"tables.meta", rows);
+  saveStore(store);
+
+  metaBody.innerHTML = "";
+  rows.forEach((r, idx)=>{
+    const tr = document.createElement("tr");
+    const cols = ["fecha","no","nombre","app","pcp","pxn","bateo"];
+    const ph = ["DD/MM/AAAA","1","Nombre","0","0","0","0%"];
+    cols.forEach((c, i)=>{
+      const td = document.createElement("td");
+      const inp = makeCellInput(r[c], ph[i]);
+      inp.addEventListener("input", ()=>{
+        store.tables.meta[idx][c] = inp.value;
+        saveStore(store);
+      });
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
+    metaBody.appendChild(tr);
+  });
+}
+document.getElementById("addMetaRow").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.meta = store.tables.meta || defaultMetaRows();
+  store.tables.meta.push({fecha:"", no:"", nombre:"", app:"", pcp:"", pxn:"", bateo:""});
+  saveStore(store);
+  renderMeta();
+});
+document.getElementById("resetMeta").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.meta = defaultMetaRows();
+  saveStore(store);
+  renderMeta();
+});
+
+/* KPIs */
+const kpiBody = document.querySelector("#kpiTable tbody");
+function defaultKpis(){
+  return [
+    {indicador:"Venta total", meta:"", proy:"", alc:""},
+    {indicador:"Presupuesto", meta:"", proy:"", alc:""},
+    {indicador:"PCP", meta:"", proy:"", alc:""},
+    {indicador:"CEPIP", meta:"", proy:"", alc:""},
+    {indicador:"Impulso", meta:"", proy:"", alc:""},
+  ];
+}
+function renderKpis(){
+  const rows = getByPath(store,"tables.kpis", null) ?? defaultKpis();
+  setByPath(store,"tables.kpis", rows);
+  saveStore(store);
+
+  kpiBody.innerHTML = "";
+  rows.forEach((r, idx)=>{
+    const tr = document.createElement("tr");
+
+    const tdInd = document.createElement("td");
+    const ind = makeCellInput(r.indicador, "Indicador");
+    ind.addEventListener("input", ()=>{
+      store.tables.kpis[idx].indicador = ind.value;
+      saveStore(store);
+    });
+    tdInd.appendChild(ind);
+    tr.appendChild(tdInd);
+
+    ["meta","proy","alc"].forEach((c, i)=>{
+      const td = document.createElement("td");
+      const inp = makeCellInput(r[c], i===0?"Meta":(i===1?"Proyección":"Alcance"));
+      inp.addEventListener("input", ()=>{
+        store.tables.kpis[idx][c] = inp.value;
+        saveStore(store);
+        paintRow(tr, store.tables.kpis[idx]);
+      });
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
+
+    const tdS = document.createElement("td");
+    const badge = document.createElement("span");
+    badge.className = "sema";
+    const dot = document.createElement("span");
+    dot.className = "dot warn";
+    const label = document.createElement("span");
+    label.textContent = "Sin dato";
+    badge.appendChild(dot);
+    badge.appendChild(label);
+    tdS.appendChild(badge);
+    tr.appendChild(tdS);
+
+    const tdN = document.createElement("td");
+    tdN.className = "muted";
+    tdN.textContent = "Completa Meta y Alcance";
+    tr.appendChild(tdN);
+
+    tr._sema = {dot, label, tdN};
+    paintRow(tr, r);
+
+    kpiBody.appendChild(tr);
+  });
+}
+function paintRow(tr, row){
+  const r = ratioFrom(row.meta, row.alc);
+  const s = semaFromRatio(r);
+  tr._sema.dot.className = "dot " + s.cls;
+  tr._sema.label.textContent = s.label;
+  tr._sema.tdN.textContent = Number.isNaN(r) ? s.note : `${s.note} — ${(r*100).toFixed(1)}% del objetivo`;
+}
+document.getElementById("recalcSema").addEventListener("click", ()=>{
+  [...kpiBody.querySelectorAll("tr")].forEach((tr, i)=>{
+    paintRow(tr, store.tables.kpis[i]);
+  });
+});
+document.getElementById("resetKpis").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.kpis = defaultKpis();
+  saveStore(store);
+  renderKpis();
+});
+
+/* Compromisos */
+const commitBody = document.querySelector("#commitTable tbody");
+function defaultCommits(){
+  return [
+    {n:"1", txt:""},
+    {n:"2", txt:""},
+    {n:"3", txt:""},
+  ];
+}
+function renderCommits(){
+  const rows = getByPath(store,"tables.commits", null) ?? defaultCommits();
+  setByPath(store,"tables.commits", rows);
+  saveStore(store);
+
+  commitBody.innerHTML = "";
+  rows.forEach((r, idx)=>{
+    const tr = document.createElement("tr");
+    const tdN = document.createElement("td");
+    const n = makeCellInput(r.n, "N°");
+    n.addEventListener("input", ()=>{
+      store.tables.commits[idx].n = n.value;
+      saveStore(store);
+    });
+    tdN.appendChild(n);
+    tr.appendChild(tdN);
+
+    const tdT = document.createElement("td");
+    const t = makeCellInput(r.txt, "Compromiso claro, medible y con fecha");
+    t.addEventListener("input", ()=>{
+      store.tables.commits[idx].txt = t.value;
+      saveStore(store);
+    });
+    tdT.appendChild(t);
+    tr.appendChild(tdT);
+
+    commitBody.appendChild(tr);
+  });
+}
+document.getElementById("addCommit").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.commits = store.tables.commits || defaultCommits();
+  store.tables.commits.push({n:String(store.tables.commits.length+1), txt:""});
+  saveStore(store);
+  renderCommits();
+});
+document.getElementById("resetCommit").addEventListener("click", ()=>{
+  store.tables = store.tables || {};
+  store.tables.commits = defaultCommits();
+  saveStore(store);
+  renderCommits();
+});
+
+/* Checklist */
+const CHECK_ITEMS = [
+  {k:"a", title:"Retroalimentación de políticas operativas", sub:"Alinear forma y fondo. Sin esto, todo se desordena."},
+  {k:"b", title:"Retroalimentación de indicadores", sub:"APP, PCP, PXN, %BATEO, lectura y acciones."},
+  {k:"c", title:"Capacitación de productos", sub:"Producto correcto, discurso correcto, venta correcta."},
+  {k:"d", title:"Revisión de boletín", sub:"Lo vigente manda. Lo viejo confunde."},
+  {k:"e", title:"Estrategias de venta", sub:"Guion, objeciones, cierres. Sin pena."},
+  {k:"f", title:"Plan de trabajo", sub:"Qué, quién, cuándo. Tradicional y efectivo."},
+  {k:"g", title:"Realización de pizarrón", sub:"Visible, actualizado, con metas claras."},
+  {k:"h", title:"Capacitación de próximos, inventario y pedido", sub:"Orden hoy para no llorar mañana."},
+  {k:"i", title:"Exhibiciones correctas", sub:"Se vende con ojos antes que con palabras."},
+];
+
+function renderChecklist(){
+  const wrap = document.getElementById("checklist");
+  wrap.innerHTML = "";
+  store.check = store.check || {};
+  CHECK_ITEMS.forEach(it=>{
+    const div = document.createElement("div");
+    div.className = "checkItem";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = !!store.check[it.k];
+    cb.addEventListener("change", ()=>{
+      store.check[it.k] = cb.checked;
+      saveStore(store);
+    });
+
+    const txt = document.createElement("div");
+    txt.className = "txt";
+    txt.innerHTML = `<b>(${it.k}) ${it.title}</b><span class="muted">${it.sub}</span>`;
+    div.appendChild(cb);
+    div.appendChild(txt);
+    wrap.appendChild(div);
+  });
+}
+
+/* Export / Import / Print / Reset */
+document.getElementById("btnPrint").addEventListener("click", ()=>window.print());
+
+document.getElementById("btnExport").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(store, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "respaldo_capacitacion_alpacel.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+});
+
+document.getElementById("btnImport").addEventListener("click", ()=>{
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", async (e)=>{
+  const f = e.target.files?.[0];
+  if(!f) return;
+  const txt = await f.text();
+  try{
+    store = JSON.parse(txt);
+    saveStore(store);
+    init();
+    alert("Listo: respaldo importado ✅");
+  }catch(err){
+    alert("Ese archivo no parece un respaldo válido 😅");
+  }finally{
+    e.target.value = "";
+  }
+});
+
+document.getElementById("btnReset").addEventListener("click", ()=>{
+  const ok = confirm("¿Reset total? Se borra TODO lo guardado en este navegador.");
+  if(!ok) return;
+  localStorage.removeItem(STORE_KEY);
+  store = {};
+  init();
+});
+
+function init(){
+  bindFields();
+  renderWeek();
+  renderMeta();
+  renderKpis();
+  renderCommits();
+  renderChecklist();
+}
+init();
+</script>
+</body>
+</html>
